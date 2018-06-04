@@ -32,6 +32,12 @@ Source21:  acpiphp.modules
 Source30:  elastic-network-interfaces.service
 Source31:  ec2-ifup@.service
 
+# ebs related stuff
+Source40:  51-ec2-hvm-devices.rules
+Source41:  70-ec2-nvme-devices.rules
+Source42:  ebsnvme-id
+Source43:  ec2udev-vbd
+
 URL:       http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1825
 BuildArch: noarch
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
@@ -91,6 +97,12 @@ install -m644 %{SOURCE10} $RPM_BUILD_ROOT%{_mandir}/man8/ec2ifscan.8
 install -m644 -D %{SOURCE20} $RPM_BUILD_ROOT/etc/modprobe.d/ixgbevf.conf
 install -m755 -D %{SOURCE21} $RPM_BUILD_ROOT/etc/sysconfig/modules/acpiphp.modules
 
+# add ebs renaming modules
+install -m644 %{SOURCE40} $RPM_BUILD_ROOT%{_sysconfdir}/udev/rules.d/
+install -m644 %{SOURCE41} $RPM_BUILD_ROOT%{_sysconfdir}/udev/rules.d/
+install -m755 %{SOURCE42} $RPM_BUILD_ROOT/sbin/
+install -m755 %{SOURCE43} $RPM_BUILD_ROOT/sbin/
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -113,6 +125,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/ec2ifup.8.gz
 %{_mandir}/man8/ec2ifdown.8.gz
 %{_mandir}/man8/ec2ifscan.8.gz
+
+%{_sysconfdir}/udev/rules.d/51-ec2-hvm-devices.rules
+%{_sysconfdir}/udev/rules.d/70-ec2-nvme-devices.rules
+/sbin/ebsnvme-id
+/sbin/ec2udev-vbd
 
 %if %{with systemd}
 %{_unitdir}/elastic-network-interfaces.service
